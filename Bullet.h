@@ -9,7 +9,7 @@
 #include <SDL2/SDL_rect.h>
 #include <cmath>
 
-extern SDL_Texture* texBullet;
+extern SDL_Texture* g_texBullet;
 
 class Bullet {
     float m_angle = 0;
@@ -47,7 +47,7 @@ public:
 
     void render(const Camera& camera) const {
         const SDL_FRect rectBullet = { m_position.x - 4, m_position.y - 2, 8, 4 };
-        camera.renderTexture(texBullet, nullptr, &rectBullet, m_angle, nullptr);
+        camera.renderTexture(g_texBullet, nullptr, &rectBullet, m_angle, nullptr);
     }
 
     void onHit() {

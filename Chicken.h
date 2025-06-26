@@ -7,9 +7,9 @@
 
 #include "SDL2/SDL_mixer.h"
 
-extern Atlas atlasExplosion;
+extern Atlas g_atlasExplosion;
 
-extern Mix_Chunk* soundExplosion;
+extern Mix_Chunk* g_soundExplosion;
 
 class Chicken {
     Vector2 m_position;
@@ -30,7 +30,7 @@ public:
 
         m_animationExplosion.setLoop(false);
         m_animationExplosion.setInterval(0.08f);    
-        m_animationExplosion.addFrame(&atlasExplosion);
+        m_animationExplosion.addFrame(&g_atlasExplosion);
         m_animationExplosion.setOnFinished(
             [&]() {
                 m_isValid = false;
@@ -42,7 +42,7 @@ public:
 
     ~Chicken() = default;
 
-    const Vector2& getPostion() const {
+    const Vector2& getPosition() const {
         return m_position;
     }
 
@@ -60,19 +60,23 @@ public:
 
     void onHurt() {
         m_isAlive = false;
-        Mix_PlayChannel(-1, soundExplosion, 0);
+        Mix_PlayChannel(-1, g_soundExplosion, 0);
     }
 
     void makeInvalid() {
         m_isValid = false;
     }
 
-    bool checkAlive() {
+    bool isAlive() {
         return m_isAlive;
     }
 
-    bool canRemove() const {
-        return !m_isAlive;
+    bool isValid() {
+        return m_isValid;
+    }
+
+    bool shouldRemove() const {
+        return !m_isValid;
     }
 };
 

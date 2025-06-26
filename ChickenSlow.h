@@ -3,12 +3,12 @@
 
 #include "Chicken.h"
 
-extern Atlas atlasChickenSlow;
+extern Atlas g_atlasChickenSlow;
 
 class ChickenFast : public Chicken {
 public:
     ChickenFast() {
-        p_animationRun.addFrame(&atlasChickenSlow);
+        p_animationRun.addFrame(&g_atlasChickenSlow);
 
         p_speedrun = 30.0f;
     }
