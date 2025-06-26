@@ -5,7 +5,6 @@
 #include "Vector2.h"
 
 #include <SDL2/SDL.h>
-#include <SDL2/SDL_rect.h>
 
 class Camera {
     Vector2 m_position;
