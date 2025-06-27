@@ -1,6 +1,3 @@
-#include <SDL2/SDL_rect.h>
-#include <SDL2/SDL_render.h>
-#include <SDL2/SDL_surface.h>
 #define SDL_MAIN_HANDLED
 
 #include "Atlas.h"
@@ -337,6 +334,16 @@ void update(float deltaTime) {
             case 1: Mix_PlayChannel(-1, soundFire2, 0); break;
             case 2: Mix_PlayChannel(-1, soundFire3, 0); break;
         }
+    }
+
+    camera->update(deltaTime);
+
+    if (hp <= 0) {
+        isRunning = false;
+        Mix_HaltMusic();
+        Mix_PlayMusic(musicLoss, 0);
+        std::string msg = "Final Score: " + std::to_string(score);
+        SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_INFORMATION, "Game Over", msg.c_str(), window);
     }
 }
 
