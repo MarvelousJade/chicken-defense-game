@@ -422,7 +422,7 @@ void render(const Camera& camera) {
         SDL_QueryTexture(texCrosshair, nullptr, nullptr, &widthCrosshair, &heightCrosshair);
         const SDL_FRect rectCorsshair = {
             posCrosshair.x - widthCrosshair / 2.0f,
-            posCrosshair.y - widthCrosshair / 2.0f,   
+            posCrosshair.y - heightCrosshair / 2.0f,   
             (float)widthCrosshair, (float)heightCrosshair
         };
         camera.renderTexture(texCrosshair, nullptr, &rectCorsshair, 0, nullptr);
