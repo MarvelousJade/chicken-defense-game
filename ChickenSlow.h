@@ -5,15 +5,15 @@
 
 extern Atlas g_atlasChickenSlow;
 
-class ChickenFast : public Chicken {
+class ChickenSlow : public Chicken {
 public:
-    ChickenFast() {
+    ChickenSlow() {
         p_animationRun.addFrame(&g_atlasChickenSlow);
 
         p_speedrun = 30.0f;
     }
 
-    ~ChickenFast() = default;
+    ~ChickenSlow() = default;
 };
 
 #endif
