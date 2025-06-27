@@ -21,6 +21,7 @@
 #include <string>
 #include <vector>
 #include <algorithm>
+#include <iostream>
 
 Camera* camera = nullptr;
 
@@ -30,7 +31,7 @@ SDL_Renderer* renderer = nullptr;
 bool isRunning = true;
 
 SDL_Texture* texHeart = nullptr;
-SDL_Texture* texBullet = nullptr;
+SDL_Texture* g_texBullet = nullptr;
 SDL_Texture* texBattery = nullptr;
 SDL_Texture* texCrosshair = nullptr;
 SDL_Texture* texBackground = nullptr;
@@ -49,7 +50,7 @@ Mix_Chunk* soundHurt = nullptr;
 Mix_Chunk* soundFire1 = nullptr;
 Mix_Chunk* soundFire2 = nullptr;
 Mix_Chunk* soundFire3 = nullptr;
-Mix_Chunk* soundExplosion = nullptr;
+Mix_Chunk* g_soundExplosion = nullptr;
 
 TTF_Font* font = nullptr;
 
@@ -77,7 +78,7 @@ void unloadResources();
 void init();
 void clean();
 void update(float deltaTime);
-void render(Camera& camera);
+void render(const Camera& camera);
 void mainLoop();
 
 int main(int argc, char** argv) {
@@ -98,9 +99,18 @@ void init() {
     Mix_AllocateChannels(32);
 
     window = SDL_CreateWindow("Atlas", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 
-                              1280, 720, SDL_WINDOW_SHOWN);
+                              1280, 720,
+                              SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
+    if (!window) {
+        std::cerr << "Window creation failed: " << SDL_GetError() << std::endl;
+        return;
+    }
 
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+    if (!renderer) {
+        std::cerr << "Renderer creation failed: " << SDL_GetError() << std::endl;
+        return;
+    }
 
     SDL_ShowCursor(SDL_DISABLE);
 
@@ -118,7 +128,7 @@ void init() {
                 int val = rand() % 100;
                 Chicken* chicken = nullptr;
                 if (val < 50) chicken = new ChickenSlow();
-                else if (val < 80) chicken = new ChickenSlow();
+                else if (val < 80) chicken = new ChickenMedium();
                 else chicken = new ChickenFast();
                 chickenList.push_back(chicken);
             }
@@ -159,7 +169,7 @@ void clean() {
 
 void loadResources() {
     texHeart = IMG_LoadTexture(renderer, "assets/heart.png");
-    texBullet = IMG_LoadTexture(renderer, "assets/bullet.png");
+    g_texBullet = IMG_LoadTexture(renderer, "assets/bullet.png");
     texBattery = IMG_LoadTexture(renderer, "assets/battery.png");
     texCrosshair = IMG_LoadTexture(renderer, "assets/crosshair.png");
     texBackground = IMG_LoadTexture(renderer, "assets/background.png");
@@ -178,14 +188,14 @@ void loadResources() {
     soundFire1 = Mix_LoadWAV("assets/fire_1.wav");
     soundFire2 = Mix_LoadWAV("assets/fire_2.wav");
     soundFire3 = Mix_LoadWAV("assets/fire_3.wav");
-    soundExplosion = Mix_LoadWAV("assets/explosionn.wav");
+    g_soundExplosion = Mix_LoadWAV("assets/explosionn.wav");
 
     font = TTF_OpenFont("assets/IPix.ttf", 28);
 }
 
 void unloadResources() {
     SDL_DestroyTexture(texHeart);
-    SDL_DestroyTexture(texBullet);
+    SDL_DestroyTexture(g_texBullet);
     SDL_DestroyTexture(texBattery);
     SDL_DestroyTexture(texCrosshair);
     SDL_DestroyTexture(texBackground);
@@ -198,7 +208,7 @@ void unloadResources() {
     Mix_FreeChunk(soundFire1);
     Mix_FreeChunk(soundFire2);
     Mix_FreeChunk(soundFire3);
-    Mix_FreeChunk(soundExplosion);
+    Mix_FreeChunk(g_soundExplosion);
 }
 
 void mainLoop() {
@@ -230,23 +240,22 @@ void mainLoop() {
                     break;
             }
         }
+        steady_clock::time_point frameStart = steady_clock::now();
+        duration<float> deltaTime = duration<float>(frameStart - lastTick);
+
+        update(deltaTime.count());
+
+        render(*camera);
+
+        SDL_RenderPresent(renderer);
+
+        lastTick = frameStart;
+        nanoseconds sleepDuration = frameDuration - (steady_clock::now() - frameStart);
+        if (sleepDuration > nanoseconds(0)) std::this_thread::sleep_for(sleepDuration);
     }
-
-    steady_clock::time_point frameStart = steady_clock::now();
-    duration<float> deltaTime = duration<float>(frameStart - lastTick);
-
-    update(deltaTime.count());
-
-    render(*camera);
-
-    SDL_RenderPresent(renderer);
-
-    lastTick = frameStart;
-    nanoseconds sleepDuration = frameDuration - (steady_clock::now() - frameStart);
-    if (sleepDuration > nanoseconds(0)) std::this_thread::sleep_for(sleepDuration);
 }
 
-void updata(float deltaTime) {
+void update(float deltaTime) {
     timerGenerate.update(deltaTime);
     timerIncreaseNumPerGen.update(deltaTime);
     
