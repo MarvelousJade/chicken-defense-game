@@ -27,7 +27,7 @@ public:
         m_velocity.y = (float)std::sin(radians) * m_speed;
     }
 
-    ~Bullet();
+    ~Bullet() = default;
 
     void setPosition(const Vector2& position) {
         m_position = position;
