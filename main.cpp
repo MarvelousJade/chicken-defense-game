@@ -100,7 +100,7 @@ void init() {
 
     window = SDL_CreateWindow("Atlas", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 
                               1280, 720,
-                              SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
+                              SDL_WINDOW_SHOWN);
     if (!window) {
         std::cerr << "Window creation failed: " << SDL_GetError() << std::endl;
         return;
@@ -327,7 +327,7 @@ void update(float deltaTime) {
 
         bulletList.emplace_back(angleBarrel);
         Bullet& bullet = bulletList.back();
-        double angleBullet = angleBarrel + (rand() % 30 - 15); // Bullet angle random change between -15 to 15
+        double angleBullet = angleBarrel + (rand() % 20 - 10); // Bullet angle random change between -15 to 15
         double bulletRadians = angleBullet * M_PI / 180;
         Vector2 bulletdirection = { (float)std::cos(bulletRadians), (float)sin(bulletRadians) };
         bullet.setPosition(posBarrelCenter + bulletdirection * lengthBarrel);
@@ -346,7 +346,7 @@ void render(const Camera& camera) {
         SDL_QueryTexture(texBackground, nullptr, nullptr, &widthBg, &heightBg);
         const SDL_FRect rectBg = {
             (1280 - widthBg) / 2.0f,
-            (720 - widthBg) / 2.0f,
+            (720 - heightBg) / 2.0f,
             (float)widthBg,(float)heightBg
         };
         camera.renderTexture(texBackground, nullptr, &rectBg, 0, nullptr);
@@ -395,7 +395,7 @@ void render(const Camera& camera) {
     }
 
     {
-        std::string strScore = "SCORE" + std::to_string(score);
+        std::string strScore = "SCORE " + std::to_string(score);
         SDL_Surface* surfaceScoreBg = TTF_RenderUTF8_Blended(font, strScore.c_str(), { 55, 55, 55, 255 });
         SDL_Surface* surfaceScoreFg = TTF_RenderUTF8_Blended(font, strScore.c_str(), { 255, 255, 255, 255 });
         SDL_Texture* texScoreBg = SDL_CreateTextureFromSurface(renderer, surfaceScoreBg);
