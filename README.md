@@ -5,14 +5,13 @@ A fast-paced arcade shooter where you defend your base from waves of invading ch
 ## 📹 Gameplay Preview
 
 <div align="center">
-  
-  [![Gameplay Video](https://img.youtube.com/vi/ahL7-md2M_8/maxresdefault.jpg)](https://www.youtube.com/watch?v=ahL7-md2M_8)
-  
-  <!-- ![Gameplay GIF](./assets/gameplay.gif) -->
-  
+  <iframe width="560" height="315" 
+          src="https://www.youtube.com/embed/ahL7-md2M_8" 
+          frameborder="0" 
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+          allowfullscreen>
+  </iframe>
 </div>
-
-> Click the image above to watch the gameplay video!
 
 ## 🎮 Features
 
