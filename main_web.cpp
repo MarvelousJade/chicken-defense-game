@@ -75,6 +75,9 @@ bool isCooldown = true;
 bool isFireKeyDown = false;
 Animation animationBarrelFire;
 
+// Global variables for frame timing
+std::chrono::steady_clock::time_point lastTick = std::chrono::steady_clock::now();
+
 void loadResources();
 void unloadResources();
 void init();
@@ -85,8 +88,6 @@ void mainLoop();
 
 // Emscripten main loop function
 void emscripten_main_loop() {
-    static auto lastTick = std::chrono::steady_clock::now();
-    
     SDL_Event event;
     while (SDL_PollEvent(&event)) {
         switch (event.type) {
@@ -130,17 +131,16 @@ void emscripten_main_loop() {
 
 int main(int argc, char** argv) {
     init();
-
+    
     #ifdef __EMSCRIPTEN__
-    // Set the main loop for Emscripten
-    emscripten_set_main_loop(emscripten_main_loop, 0, 1);
+    // Set the main loop for Emscripten (60 FPS, simulate infinite loop)
+    emscripten_set_main_loop(emscripten_main_loop, 60, 1);
     #else
     // Original main loop for native builds
     mainLoop();
     #endif
-
+    
     clean();
-
     return 0;
 }
 
@@ -401,7 +401,14 @@ void update(float deltaTime) {
         Mix_HaltMusic();
         Mix_PlayMusic(musicLoss, 0);
         std::string msg = "Final Score: " + std::to_string(score);
+        
+        #ifdef __EMSCRIPTEN__
+        // For web, we can't show message boxes, so just log to console
+        std::cout << msg << std::endl;
+        // Or you could implement a custom game over screen
+        #else
         SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_INFORMATION, "Game Over", msg.c_str(), window);
+        #endif
     }
 }
 
@@ -486,4 +493,3 @@ void render(const Camera& camera) {
         camera.renderTexture(texCrosshair, nullptr, &rectCorsshair, 0, nullptr);
     }
 }
-
